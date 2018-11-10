@@ -8,10 +8,11 @@ describe MailgunRails::Deliverer do
   describe "#deliver" do
     let(:api_key) { :some_api_key }
     let(:domain) { :some_domain }
+    let(:region) { :some_region }
     let(:mailgun_client) { double(MailgunRails::Client) }
 
     before(:each) do
-      MailgunRails::Client.stub(:new).with(api_key, domain, true).and_return mailgun_client
+      MailgunRails::Client.stub(:new).with(api_key, domain, true, region).and_return mailgun_client
     end
 
     it 'should invoke mailgun message transforming the basic email properties' do
@@ -125,7 +126,7 @@ describe MailgunRails::Deliverer do
     def check_mailgun_message(rails_message, mailgun_message)
       rest_response = double(:code => 200, :to_str => '{"message": "Queued. Thank you.","id": "<20111114174239.25659.5817@samples.mailgun.org>"}')
       mailgun_client.should_receive(:send_message).with(mailgun_message).and_return(rest_response)
-      MailgunRails::Deliverer.new(api_key: api_key, domain: domain).deliver!(rails_message)
+      MailgunRails::Deliverer.new(api_key: api_key, domain: domain, region: region).deliver!(rails_message)
     end
 
     def rails_message_with_attachment
